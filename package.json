@@ -1,0 +1,26 @@
+{
+  "name": "csrf-demo",
+  "version": "0.1.0",
+  "description": "CSRF Test app",
+  "main": "src/js/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./src/js/index.js 8082"
+  },
+  "keywords": [
+    "csrf",
+    "security",
+    "node.js"
+  ],
+  "author": "Paulo Diovani Gonçalves",
+  "license": "MIT",
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-coffeelint": "0.0.10",
+    "grunt-contrib-coffee": "^0.10.1",
+    "grunt-contrib-watch": "^0.6.1"
+  },
+  "dependencies": {
+    "jade": "^1.3.1"
+  }
+}

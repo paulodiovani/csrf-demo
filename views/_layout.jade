@@ -1,0 +1,27 @@
+doctype html
+html
+  head
+    title 
+      block title
+      |  - Demonstração de ataque CSRF
+    meta(charset="utf-8")
+    meta(http-equiv="X-UA-Compatible", content="IE=10")
+    meta(name="format-detection", content="telephone=no")
+    meta(name="viewport", content="width=1024, user-scalable=yes")
+    meta(name="robots", content="all,follow")
+    block styles
+      link(rel="stylesheet", href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css")
+      link(rel="stylesheet", href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css")
+    block scripts
+  body
+    div.container-fluid
+      div.row
+        div.col-md-12
+          div.page-header
+            h1 
+              | Login 
+              small Demonstração de ataque CSRF
+    div.container-fluid
+      div.row
+        div#content.col-md-12
+          block content
