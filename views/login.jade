@@ -4,4 +4,13 @@ block title
   | Login
   
 block content
-  div Hello World!
+  .row
+    .col-md-4
+      form(role="form", action="/login", method="POST")
+        .form-group
+          label(for="username") E-mail
+          input#username.form-control(name="username", placeholder="Endereço de e-mail")
+        .form-group
+          label(for="password") Senha
+          input#password.form-control(type="password", name="password", placeholder="Digite sua senha")
+        button.btn.btn-lg.btn-block.btn-primary(type="submit") Login
