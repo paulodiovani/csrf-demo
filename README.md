@@ -13,6 +13,8 @@ Então execute:
     npm install
     npm start
 
+Depois disso basta acessar a aplicação em http://localhost:8082.
+
 ## Para desenvolver
 
 Os fontes são escritos em CoffeeScript e validados e compilados com Grunt.
@@ -21,7 +23,7 @@ Primeiro instale as dependências:
 
     npm install -g coffee-script grunt-cli
 
-Então apenas execute a _default task_ do Grunt, que irá validar os fontes, compilar e observar por modificações:
+Então apenas execute a _default task_ do Grunt, que irá validar os fontes, compilar, observar por modificações e iniciar o webserver.
 
     grunt
 

@@ -11,8 +11,10 @@ module.exports = (grunt) ->
         tasks: ['coffeelint:gruntfile']
 
       makecoffee:
+        options:
+          nospawn: true
         files: ['src/**/*.coffee']
-        tasks: ['coffeelint:sources', 'coffee:node']
+        tasks: ['coffeelint:sources', 'coffee:node', 'develop']
 
     # Check for syntax
     coffeelint:
@@ -31,14 +33,24 @@ module.exports = (grunt) ->
         dest: './src/js/'
         ext: '.js'
 
+    # Start a node app
+    develop:
+      webserver:
+        file: './src/js/index.js'
+        cmd: 'node'
+        args: ["8082"]
+        env: {NODE_ENV: 'development'}
+
   # load plugins
   grunt.loadNpmTasks 'grunt-contrib-watch'
   grunt.loadNpmTasks 'grunt-coffeelint'
   grunt.loadNpmTasks 'grunt-contrib-coffee'
+  grunt.loadNpmTasks 'grunt-develop'
 
   # default task(s)
   grunt.registerTask 'default', [
     'coffeelint:gruntfile', 'coffeelint:sources'
     'coffee:node'
+    'develop'
     'watch'
   ]
