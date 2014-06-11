@@ -1,13 +1,10 @@
+url        = require("url")
+controller = require("./controller")
+
 # O Router é responsável por
 # interpretar as requisições e
 # executar o método correto do
 # controller
-
-# Dependências requeridas
-url = require("url")
-controller = require("./controller")
-
-# Inicio da classe
 class Router
   # Rotas definidas para
   # os métodos do controller
@@ -33,7 +30,7 @@ class Router
     else
       controller.error(req, res, 404)
     # Fecha a conexão
-    res.end()
+    # res.end()
 
   # Obtém a ação a executar
   # de acordo com a url

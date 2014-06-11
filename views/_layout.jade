@@ -22,4 +22,11 @@ html
               | Login 
               small Demonstração de ataque CSRF
     div.container
-      block content
+      div.row
+        div.col-md-8
+          block content
+        div.col-md-4
+          if username
+            div.well
+              i.glyphicon.glyphicon-user
+              |  #{username}

@@ -1,9 +1,8 @@
 # O script Index incia o servidor HTTP
 # e controla as requisições e respostas
 
-# Dependências requeridas
-http       = require("http")
-router     = require("./router")
+http   = require("http")
+router = require("./router")
 
 # Obtém a porta à escutar, ou `8082` por padrão
 port = process.argv[2] || 8082

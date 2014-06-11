@@ -26,11 +26,10 @@
       console.log("Requested " + u.path);
       action = this._getAction(u.pathname);
       if (action != null) {
-        controller[action](req, res);
+        return controller[action](req, res);
       } else {
-        controller.error(req, res, 404);
+        return controller.error(req, res, 404);
       }
-      return res.end();
     };
 
     Router.prototype._getAction = function(path) {
