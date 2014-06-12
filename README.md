@@ -1,19 +1,38 @@
-# CSRF App
+# CSRF Demo App
 
 Uma aplicação simples para teste e demonstração de ataques [CSRF (_Cross-site request forgery_)][1]
+
+## [Documentação][2]
+
+[Documentação dos fontes][2], gerada via [Docco](http://jashkenas.github.io/docco/).
+
+[2]: http://paulodiovani.github.io/nos-sonhos-da-cidade/csrf-demo/
 
 ## Para executar localmente
 
 Primeiramente você deve ter Node.js e NPM Instalados.
-
-Então execute:
+Então fazer um clone deste repositório.
 
     git clone https://github.com/paulodiovani/csrf-demo.git
     cd csrf-demo
-    npm install
-    npm start
 
-Depois disso basta acessar a aplicação em http://localhost:8082.
+Você deve configurar o servidor SMTP a utilizar e e-mail de contato no arquivo `config.json`.
+
+    cp config.json.dist config.json
+    # Edite utilizando vim, ou seu editor favorito
+    vim config.json
+
+Para instalar as dependências e iniciar a aplicação.
+
+    npm install && npm start
+
+Depois disso basta acessar em http://localhost:8082.
+
+### Testes CSRF
+
+O diretório `exploits/` contém páginas HTML com exemplos de ataques.
+
+Você pode executálos abrindo as páginas diretamente no navegador ou acessando http://paulodiovani.github.io/nos-sonhos-da-cidade/csrf-demo/exploits/
 
 ## Para desenvolver
 

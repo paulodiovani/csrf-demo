@@ -1,5 +1,16 @@
+# # CSRF App
+#
+# Uma aplicação simples para teste e demonstração de
+# ataques [CSRF (_Cross-site request forgery_)][1]
+#
+# Fontes do projeto em https://github.com/paulodiovani/csrf-demo
+#
+# # index.coffee
+#
 # O script Index incia o servidor HTTP
 # e controla as requisições e respostas
+#
+# [1]: http://en.wikipedia.org/wiki/Csrf
 
 http   = require("http")
 router = require("./router")
