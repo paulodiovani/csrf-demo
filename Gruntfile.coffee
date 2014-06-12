@@ -13,7 +13,7 @@ module.exports = (grunt) ->
       makecoffee:
         options:
           nospawn: true
-        files: ['src/**/*.coffee']
+        files: ['src/**/*.coffee', 'config.json']
         tasks: ['coffeelint:sources', 'coffee:node', 'develop']
 
     # Check for syntax

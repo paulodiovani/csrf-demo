@@ -14,7 +14,7 @@
     Router.prototype._routes = [];
 
     Router.prototype.add = function(path, action) {
-      return this._routes.push({
+      this._routes.push({
         path: path,
         action: action
       });
@@ -22,13 +22,13 @@
 
     Router.prototype.process = function(req, res) {
       var action, u;
-      u = url.parse(req.url, true);
+      u = url.parse(req.url);
       console.log("Requested " + u.path);
       action = this._getAction(u.pathname);
       if (action != null) {
-        return controller[action](req, res);
+        controller[action](req, res);
       } else {
-        return controller.error(req, res, 404);
+        controller.error(req, res, 404);
       }
     };
 

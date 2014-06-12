@@ -1,6 +1,7 @@
-qs   = require("querystring")
-fs   = require("fs")
-jade = require("jade")
+qs     = require("querystring")
+fs     = require("fs")
+jade   = require("jade")
+crypto = require("crypto")
 
 config = require("../../config.json")
 
@@ -8,31 +9,67 @@ config = require("../../config.json")
 # executando as ações necessárias e
 # renderizando as views
 class Controller
-  # Argumentos passados pelo `request`
+  # Argumentos do `request`
   req: null
   res: null
 
   # Exibe a view de login
   login: (@req, @res) =>
     data =
-      usename: null
+      username: @_loggerUser()
     # Processa os dados enviados para login
     @_parsePost (post) =>
-      if post
-        for u in config.users
-          console.log u, post
-          if post.username is u.username and post.password is u.password
-            data.username = post.username
-            # TODO: Salvar informações de login nos cookies
-            break
-        data.errormessage = "Usuário e senha incorretos." if not data.logged?
-      # Exibe a view
-      @_render "login", data
+      if post?
+        md5 = crypto.createHash "md5"
+        md5.update post.password
+        md5pass = md5.digest "hex"
 
-  # Exibe cabeçalho e view de erro
+        if @_loginValid post.username, md5pass
+          data.username = post.username
+          hash = @_getCookieHash post.username, md5pass
+          head = [200,
+            "Set-Cookie": "login=#{hash}"
+            "Content-Type": "text/html"]
+        else
+          data.errormessage = "Usuário e senha incorretos."
+          head = null
+      # Exibe a view
+      @_render "login", data, head
+    return
+
+  # Exibe status e view de erro
   error: (@req, @res, code) ->
     view = "error#{code}"
-    @_render view, null, code
+    @_render view, null, [code, {"Content-Type": "text/html"}]
+    return
+
+  # Verifica se existe usuário logado
+  _loggerUser: ->
+    cookies = @_parseCookie()
+    if cookies.login
+      for u in config.users
+        [username, password] = u
+        hash = @_getCookieHash username, password
+        return username if hash is cookies.login
+    return null
+
+  # Valida se o usuário e senha são válidos
+  _loginValid: (user, md5pass)->
+    for u in config.users
+      [username, password] = u
+      if user is username and md5pass is password
+        return true
+
+    return false
+
+  # Cria um hash para salvar/comparar no Cookie
+  _getCookieHash: (user, md5pass) ->
+    sha1 = crypto.createHash "sha1"
+    sha1.update user
+    sha1.update md5pass
+    hash = sha1.digest "hex"
+
+    return hash[..6]
 
   # Lê os dados enviados via POST
   _parsePost: (callback) ->
@@ -42,17 +79,30 @@ class Controller
     @req.on "end",=>
       post = qs.parse body if body isnt ""
       callback.call @, post
+    return
+
+  # Lê os dados dos Cookies
+  _parseCookie: ->
+    list = {}
+    rc = @req.headers.cookie
+    if rc?
+      for cookie in rc.split ";"
+        [key, val] = cookie.split "="
+        list[key] = val
+    return list
 
   # Renderiza uma view
-  _render: (view, data = null, code = 200) ->
+  _render: (view, data = null, head = null) ->
     viewPath = "views/#{view}.jade"
     # Lê e compila o template Jade
     tpl    = fs.readFileSync viewPath
     viewFn = jade.compile tpl.toString(), {filename: viewPath}
     # ...então renderiza o mesmo
-    @res.writeHead code, {"Content-Type": "text/html"}
+    [code, obj] = if head? then head else [200, {"Content-Type": "text/html"}]
+    @res.writeHead code, obj
     @res.write viewFn(data)
     @res.end()
+    return
 
 # Exporta uma instancia da classe
 module.exports = new Controller()

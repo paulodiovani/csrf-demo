@@ -15,22 +15,21 @@ class Router
     @_routes.push
       path: path
       action: action
+    return
 
   # Processa uma requisição,
   # executando um método do controller
   process: (req, res) =>
-    u = url.parse(req.url, true)
-
+    u = url.parse req.url
     # Faz um log no console de todas as requisições
     console.log "Requested #{u.path}"
     # Executação uma ação
-    action = @_getAction(u.pathname)
+    action = @_getAction u.pathname
     if action?
       controller[action](req, res)
     else
-      controller.error(req, res, 404)
-    # Fecha a conexão
-    # res.end()
+      controller.error req, res, 404
+    return
 
   # Obtém a ação a executar
   # de acordo com a url
@@ -38,7 +37,7 @@ class Router
     for r in @_routes
       if r.path == path
         return r.action
-    null
+    return null
 
-# Exporta uma instancia da classe
+# Exporta uma instância da classe
 module.exports = new Router()
