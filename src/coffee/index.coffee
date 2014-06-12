@@ -13,9 +13,10 @@ server.listen port
 console.log "Servidor rodando na porta #{port}"
 
 # Adiciona as rotas da aplicação
-router.add "/"      , "login"
-router.add "/login" , "login"
-router.add "/logout", "logout"
+router.add "/"       , "login"
+router.add "/login"  , "login"
+router.add "/logout" , "logout"
+router.add "/contact", "contact"
 
 # Escuta as requisições e
 # as envia para o Router

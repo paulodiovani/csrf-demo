@@ -19,6 +19,8 @@
 
   router.add("/logout", "logout");
 
+  router.add("/contact", "contact");
+
   server.on("request", router.process);
 
 }).call(this);

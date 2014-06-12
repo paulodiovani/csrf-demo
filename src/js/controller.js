@@ -1,5 +1,5 @@
 (function() {
-  var Controller, config, crypto, fs, jade, qs, url,
+  var Controller, config, crypto, fs, jade, nodemailer, qs, url,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   url = require("url");
@@ -11,6 +11,8 @@
   jade = require("jade");
 
   crypto = require("crypto");
+
+  nodemailer = require("nodemailer");
 
   config = require("../../config.json");
 
@@ -66,6 +68,51 @@
         "Location": "/"
       });
       this.res.end();
+    };
+
+    Controller.prototype.contact = function(req, res) {
+      var data, get, mailOptions, smtpTransport;
+      this.req = req;
+      this.res = res;
+      data = {
+        username: this.getLoggedUser(),
+        pathname: this._urlPathname()
+      };
+      get = this._parseGet();
+      if (get != null) {
+        if ((get.fullname == null) || get.fullname === "" || (get.email == null) || get.email === "" || (get.subject == null) || get.subject === "" || (get.message == null) || get.message === "") {
+          data.errormessage = "Atenção: Todos os campos são obrigatórios.";
+        } else {
+          smtpTransport = nodemailer.createTransport("SMTP", {
+            service: config.smtp_service,
+            auth: {
+              user: config.smtp_username,
+              pass: config.smtp_password
+            }
+          });
+          mailOptions = {
+            from: "" + get.fullname + " <" + get.email + ">",
+            to: config.contact_address,
+            subject: get.subject,
+            text: get.message
+          };
+          smtpTransport.sendMail(mailOptions, (function(_this) {
+            return function(error, response) {
+              if (error) {
+                data.errormessage = "Erro ao enviar mensagem";
+                console.error(error.stack || error);
+              } else {
+                data.successmessage = "Mensagem enviada com sucesso";
+                console.log("Mensagem enviada: " + response.message);
+              }
+              smtpTransport.close();
+              return _this._render("contact", data);
+            };
+          })(this));
+          return;
+        }
+      }
+      this._render("contact", data);
     };
 
     Controller.prototype.getLoggedUser = function() {
@@ -140,6 +187,22 @@
           return callback.call(_this, post);
         };
       })(this));
+    };
+
+    Controller.prototype._parseGet = function() {
+      var empty, u;
+      empty = function(obj) {
+        var k;
+        for (k in obj) {
+          return false;
+        }
+        return true;
+      };
+      u = url.parse(this.req.url, true);
+      if (!empty(u.query)) {
+        return u.query;
+      }
+      return null;
     };
 
     Controller.prototype._parseCookie = function() {

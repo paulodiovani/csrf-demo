@@ -1,8 +1,9 @@
-url    = require("url")
-qs     = require("querystring")
-fs     = require("fs")
-jade   = require("jade")
-crypto = require("crypto")
+url        = require("url")
+qs         = require("querystring")
+fs         = require("fs")
+jade       = require("jade")
+crypto     = require("crypto")
+nodemailer = require("nodemailer")
 
 config = require("../../config.json")
 
@@ -45,6 +46,49 @@ class Controller
       "Set-Cookie": "login="
       "Location": "/"
     @res.end()
+    return
+
+  # Exibe o formulário de contato
+  contact: (@req, @res) ->
+    data =
+      username: @getLoggedUser()
+      pathname: @_urlPathname()
+    # Processa os dados enviados via GET
+    get = @_parseGet()
+    if get?
+      # Valida os dados
+      if not get.fullname? or get.fullname is "" or
+      not get.email? or get.email is "" or
+      not get.subject? or get.subject is "" or
+      not get.message? or get.message is ""
+        data.errormessage = "Atenção: Todos os campos são obrigatórios."
+      else
+        # Envia e-mail
+        smtpTransport = nodemailer.createTransport "SMTP",
+          service: config.smtp_service
+          auth:
+            user: config.smtp_username
+            pass: config.smtp_password
+
+        mailOptions =
+          from: "#{get.fullname} <#{get.email}>" # sender address
+          to: config.contact_address             # list of receivers
+          subject: get.subject                   # Subject line
+          text: get.message                      # plaintext body
+
+        smtpTransport.sendMail mailOptions, (error, response) =>
+          if error
+            data.errormessage = "Erro ao enviar mensagem"
+            console.error error.stack or error
+          else
+            data.successmessage = "Mensagem enviada com sucesso"
+            console.log "Mensagem enviada: #{response.message}"
+          # Fecha o pool smtp e exibe a view
+          smtpTransport.close()
+          @_render "contact", data
+        return
+
+    @_render "contact", data
     return
 
   # Verifica se existe usuário logado
@@ -97,6 +141,19 @@ class Controller
       post = qs.parse body if body isnt ""
       callback.call @, post
     return
+
+  # Lê dados enviados via GET
+  _parseGet: ->
+    # Função que verifica se objeto é vazio
+    empty = (obj) ->
+      for k of obj
+        return false
+      true
+    # Retorna a url query, se não for vazio
+    # ou retorna null
+    u = url.parse @req.url, true
+    return u.query if not empty u.query
+    return null
 
   # Lê os dados dos Cookies
   _parseCookie: ->

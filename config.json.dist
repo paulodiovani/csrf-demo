@@ -1,5 +1,10 @@
 {
   "users": [
-    ["admin", "81dc9bdb52d04dc20036dbd8313ed055"]
-  ]
+    ["admin", "81dc9bdb52d04dc20036dbd8313ed055"],
+    ["paulodiovani", "3858f62230ac3c915f300c664312c63f"]
+  ],
+  "smtp_service": "Gmail",
+  "smtp_username": "",
+  "smtp_password": "",
+  "contact_address": ""
 }
