@@ -6,7 +6,7 @@ Uma aplicação simples para teste e demonstração de ataques [CSRF (_Cross-sit
 
 [Documentação dos fontes][2], gerada via [Docco](http://jashkenas.github.io/docco/).
 
-[2]: http://paulodiovani.github.io/nos-sonhos-da-cidade/csrf-demo/
+[2]: http://paulodiovani.github.io/csrf-demo/
 
 ## Para executar localmente
 
@@ -32,7 +32,7 @@ Depois disso basta acessar em http://localhost:8082.
 
 O diretório `exploits/` contém páginas HTML com exemplos de ataques.
 
-Você pode executálos abrindo as páginas diretamente no navegador ou acessando http://paulodiovani.github.io/nos-sonhos-da-cidade/csrf-demo/exploits/
+Você pode executálos abrindo as páginas diretamente no navegador ou acessando http://paulodiovani.github.io/csrf-demo/exploits/
 
 ## Para desenvolver
 
