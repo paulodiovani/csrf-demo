@@ -61,8 +61,16 @@
     };
 
     Controller.prototype.logout = function(req, res) {
+      var data;
       this.req = req;
       this.res = res;
+      data = {
+        username: this.getLoggedUser(),
+        pathname: this._urlPathname()
+      };
+      if (!data.username) {
+        return this.error(this.req, this.res, 403);
+      }
       this.res.writeHead(302, {
         "Set-Cookie": "login=",
         "Location": "/"
@@ -78,6 +86,9 @@
         username: this.getLoggedUser(),
         pathname: this._urlPathname()
       };
+      if (!data.username) {
+        return this.error(this.req, this.res, 403);
+      }
       get = this._parseGet();
       if (get != null) {
         if ((get.fullname == null) || get.fullname === "" || (get.email == null) || get.email === "" || (get.subject == null) || get.subject === "" || (get.message == null) || get.message === "") {

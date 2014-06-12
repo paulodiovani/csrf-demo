@@ -42,6 +42,14 @@ class Controller
 
   # Descola o usuário
   logout: (@req, @res) =>
+    data =
+      username: @getLoggedUser()
+      pathname: @_urlPathname()
+
+    # Valida usuário logado
+    return @error @req, @res, 403 if not data.username
+
+    # Apaga cookie e redireciona
     @res.writeHead 302,
       "Set-Cookie": "login="
       "Location": "/"
@@ -53,6 +61,10 @@ class Controller
     data =
       username: @getLoggedUser()
       pathname: @_urlPathname()
+
+    # Valida usuário logado
+    return @error @req, @res, 403 if not data.username
+      
     # Processa os dados enviados via GET
     get = @_parseGet()
     if get?
