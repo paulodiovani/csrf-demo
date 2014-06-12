@@ -1,8 +1,13 @@
 {
   "name": "csrf-demo",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "CSRF Test app",
   "main": "src/js/index.js",
+  "homepage": "https://github.com/paulodiovani/csrf-demo",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/paulodiovani/csrf-demo.git"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node ./src/js/index.js 8082"
