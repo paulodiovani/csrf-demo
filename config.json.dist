@@ -1,5 +1,5 @@
 {
   "users": [
-    {"username": "admin", "password": "1234"}
+    ["admin", "81dc9bdb52d04dc20036dbd8313ed055"]
   ]
 }

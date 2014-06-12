@@ -23,11 +23,12 @@
     Router.prototype.process = function(req, res) {
       var action, u;
       u = url.parse(req.url);
-      console.log("Requested " + u.path);
       action = this._getAction(u.pathname);
       if (action != null) {
+        console.log("Requested " + u.path, 200);
         controller[action](req, res);
       } else {
+        console.warn("Requested " + u.path, 404);
         controller.error(req, res, 404);
       }
     };

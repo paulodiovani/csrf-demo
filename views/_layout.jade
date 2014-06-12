@@ -24,9 +24,20 @@ html
     div.container
       div.row
         div.col-md-8
+          if errormessage
+            div.alert.alert-danger #{errormessage}
           block content
         div.col-md-4
           if username
             div.well
               i.glyphicon.glyphicon-user
               |  #{username}
+          ul.nav.nav-pills.nav-stacked
+            if username
+              li(class=pathname == "/contact" ? "active" : "")
+                a(href="/contact") Contato
+              li(class=pathname == "/logout" ? "active" : "")
+                a(href="/logout") Logout
+            else
+              li(class=pathname == "/login" || pathname == "/" ? "active" : "")
+                a(href="/login") Login

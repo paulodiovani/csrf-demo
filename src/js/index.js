@@ -17,6 +17,8 @@
 
   router.add("/login", "login");
 
+  router.add("/logout", "logout");
+
   server.on("request", router.process);
 
 }).call(this);

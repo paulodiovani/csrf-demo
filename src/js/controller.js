@@ -1,6 +1,8 @@
 (function() {
-  var Controller, config, crypto, fs, jade, qs,
+  var Controller, config, crypto, fs, jade, qs, url,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+
+  url = require("url");
 
   qs = require("querystring");
 
@@ -14,6 +16,7 @@
 
   Controller = (function() {
     function Controller() {
+      this.logout = __bind(this.logout, this);
       this.login = __bind(this.login, this);
     }
 
@@ -26,7 +29,8 @@
       this.req = req;
       this.res = res;
       data = {
-        username: this._loggerUser()
+        username: this._loggedUser(),
+        pathname: this._urlPathname()
       };
       this._parsePost((function(_this) {
         return function(post) {
@@ -54,6 +58,16 @@
       })(this));
     };
 
+    Controller.prototype.logout = function(req, res) {
+      this.req = req;
+      this.res = res;
+      this.res.writeHead(302, {
+        "Set-Cookie": "login=",
+        "Location": "/"
+      });
+      this.res.end();
+    };
+
     Controller.prototype.error = function(req, res, code) {
       var view;
       this.req = req;
@@ -66,7 +80,7 @@
       ]);
     };
 
-    Controller.prototype._loggerUser = function() {
+    Controller.prototype._loggedUser = function() {
       var cookies, hash, password, u, username, _i, _len, _ref;
       cookies = this._parseCookie();
       if (cookies.login) {
@@ -81,6 +95,12 @@
         }
       }
       return null;
+    };
+
+    Controller.prototype._urlPathname = function() {
+      var u;
+      u = url.parse(this.req.url);
+      return u.pathname;
     };
 
     Controller.prototype._loginValid = function(user, md5pass) {

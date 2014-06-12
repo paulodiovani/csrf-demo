@@ -9,8 +9,6 @@ block content
       strong Olá #{username}. 
       | Você já está logado no sistema.
   else
-    if errormessage
-      div.alert.alert-danger #{errormessage}
     div.row
       div.col-md-6
         form(role="form", action="/login", method="POST")

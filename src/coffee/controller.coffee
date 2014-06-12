@@ -1,3 +1,4 @@
+url    = require("url")
 qs     = require("querystring")
 fs     = require("fs")
 jade   = require("jade")
@@ -16,7 +17,8 @@ class Controller
   # Exibe a view de login
   login: (@req, @res) =>
     data =
-      username: @_loggerUser()
+      username: @_loggedUser()
+      pathname: @_urlPathname()
     # Processa os dados enviados para login
     @_parsePost (post) =>
       if post?
@@ -37,6 +39,14 @@ class Controller
       @_render "login", data, head
     return
 
+  # Descola o usuário
+  logout: (@req, @res) =>
+    @res.writeHead 302,
+      "Set-Cookie": "login="
+      "Location": "/"
+    @res.end()
+    return
+
   # Exibe status e view de erro
   error: (@req, @res, code) ->
     view = "error#{code}"
@@ -44,7 +54,8 @@ class Controller
     return
 
   # Verifica se existe usuário logado
-  _loggerUser: ->
+  # e rtorna o username caso sim
+  _loggedUser: ->
     cookies = @_parseCookie()
     if cookies.login
       for u in config.users
@@ -52,6 +63,11 @@ class Controller
         hash = @_getCookieHash username, password
         return username if hash is cookies.login
     return null
+
+  # Retorna o caminho requerido
+  _urlPathname: ->
+    u = url.parse @req.url
+    return u.pathname
 
   # Valida se o usuário e senha são válidos
   _loginValid: (user, md5pass)->

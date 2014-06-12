@@ -21,13 +21,15 @@ class Router
   # executando um método do controller
   process: (req, res) =>
     u = url.parse req.url
-    # Faz um log no console de todas as requisições
-    console.log "Requested #{u.path}"
     # Executação uma ação
     action = @_getAction u.pathname
     if action?
+      # Faz um log no console de todas as requisições
+      console.log "Requested #{u.path}", 200
       controller[action](req, res)
     else
+      # Faz um log no console de todas as requisições
+      console.warn "Requested #{u.path}", 404
       controller.error req, res, 404
     return
 
