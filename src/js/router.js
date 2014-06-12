@@ -25,11 +25,11 @@
       u = url.parse(req.url);
       action = this._getAction(u.pathname);
       if (action != null) {
-        console.log("Requested " + u.path, 200);
         controller[action](req, res);
+        console.log("[Requested: " + u.path + "]", "[Logged user: " + (controller.getLoggedUser()) + "]", "[200]");
       } else {
-        console.warn("Requested " + u.path, 404);
         controller.error(req, res, 404);
+        console.warn("[Requested: " + u.path + "]", "[Logged user: " + (controller.getLoggedUser()) + "]", "[404]");
       }
     };
 

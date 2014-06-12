@@ -29,7 +29,7 @@
       this.req = req;
       this.res = res;
       data = {
-        username: this._loggedUser(),
+        username: this.getLoggedUser(),
         pathname: this._urlPathname()
       };
       this._parsePost((function(_this) {
@@ -68,19 +68,7 @@
       this.res.end();
     };
 
-    Controller.prototype.error = function(req, res, code) {
-      var view;
-      this.req = req;
-      this.res = res;
-      view = "error" + code;
-      this._render(view, null, [
-        code, {
-          "Content-Type": "text/html"
-        }
-      ]);
-    };
-
-    Controller.prototype._loggedUser = function() {
+    Controller.prototype.getLoggedUser = function() {
       var cookies, hash, password, u, username, _i, _len, _ref;
       cookies = this._parseCookie();
       if (cookies.login) {
@@ -95,6 +83,18 @@
         }
       }
       return null;
+    };
+
+    Controller.prototype.error = function(req, res, code) {
+      var view;
+      this.req = req;
+      this.res = res;
+      view = "error" + code;
+      this._render(view, null, [
+        code, {
+          "Content-Type": "text/html"
+        }
+      ]);
     };
 
     Controller.prototype._urlPathname = function() {

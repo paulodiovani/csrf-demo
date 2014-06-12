@@ -24,13 +24,15 @@ class Router
     # Executação uma ação
     action = @_getAction u.pathname
     if action?
-      # Faz um log no console de todas as requisições
-      console.log "Requested #{u.path}", 200
       controller[action](req, res)
-    else
       # Faz um log no console de todas as requisições
-      console.warn "Requested #{u.path}", 404
+      console.log "[Requested: #{u.path}]",
+        "[Logged user: #{controller.getLoggedUser()}]", "[200]"
+    else
       controller.error req, res, 404
+      # Faz um log no console de todas as requisições
+      console.warn "[Requested: #{u.path}]",
+        "[Logged user: #{controller.getLoggedUser()}]", "[404]"
     return
 
   # Obtém a ação a executar

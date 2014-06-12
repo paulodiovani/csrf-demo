@@ -17,7 +17,7 @@ class Controller
   # Exibe a view de login
   login: (@req, @res) =>
     data =
-      username: @_loggedUser()
+      username: @getLoggedUser()
       pathname: @_urlPathname()
     # Processa os dados enviados para login
     @_parsePost (post) =>
@@ -47,22 +47,23 @@ class Controller
     @res.end()
     return
 
-  # Exibe status e view de erro
-  error: (@req, @res, code) ->
-    view = "error#{code}"
-    @_render view, null, [code, {"Content-Type": "text/html"}]
-    return
-
   # Verifica se existe usuário logado
   # e rtorna o username caso sim
-  _loggedUser: ->
+  getLoggedUser: ->
     cookies = @_parseCookie()
     if cookies.login
       for u in config.users
         [username, password] = u
         hash = @_getCookieHash username, password
-        return username if hash is cookies.login
+        if hash is cookies.login
+          return username
     return null
+
+  # Exibe status e view de erro
+  error: (@req, @res, code) ->
+    view = "error#{code}"
+    @_render view, null, [code, {"Content-Type": "text/html"}]
+    return
 
   # Retorna o caminho requerido
   _urlPathname: ->
