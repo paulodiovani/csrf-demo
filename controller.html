@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>controller.coffee</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page">
+            
+              
+              <a class="source" href="controller.html">
+                controller.coffee
+              </a>
+            
+              
+              <a class="source" href="index.html">
+                index.coffee
+              </a>
+            
+              
+              <a class="source" href="router.html">
+                router.coffee
+              </a>
+            
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>controller.coffee</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>url        = <span class="hljs-built_in">require</span>(<span class="hljs-string">"url"</span>)
+qs         = <span class="hljs-built_in">require</span>(<span class="hljs-string">"querystring"</span>)
+fs         = <span class="hljs-built_in">require</span>(<span class="hljs-string">"fs"</span>)
+jade       = <span class="hljs-built_in">require</span>(<span class="hljs-string">"jade"</span>)
+crypto     = <span class="hljs-built_in">require</span>(<span class="hljs-string">"crypto"</span>)
+nodemailer = <span class="hljs-built_in">require</span>(<span class="hljs-string">"nodemailer"</span>)
+
+config = <span class="hljs-built_in">require</span>(<span class="hljs-string">"../../config.json"</span>)</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>O Controller contém a lógica da aplicação,
+executando as ações necessárias e
+renderizando as views</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Controller</span></span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>Argumentos do <code>request</code></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-attribute">req</span>: <span class="hljs-literal">null</span>
+  <span class="hljs-attribute">res</span>: <span class="hljs-literal">null</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>Exibe a view de login</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-attribute">login</span>: <span class="hljs-function"><span class="hljs-params">(<span class="hljs-property">@req</span>, <span class="hljs-property">@res</span>)</span> =&gt;</span>
+    data =
+      <span class="hljs-attribute">username</span>: <span class="hljs-property">@getLoggedUser</span>()
+      <span class="hljs-attribute">pathname</span>: <span class="hljs-property">@_urlPathname</span>()</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>Processa os dados enviados para login</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-property">@_parsePost</span> <span class="hljs-function"><span class="hljs-params">(post)</span> =&gt;</span>
+      <span class="hljs-keyword">if</span> post?
+        md5 = crypto.createHash <span class="hljs-string">"md5"</span>
+        md5.update post.password
+        md5pass = md5.digest <span class="hljs-string">"hex"</span>
+
+        <span class="hljs-keyword">if</span> <span class="hljs-property">@_loginValid</span> post.username, md5pass
+          data.username = post.username
+          hash = <span class="hljs-property">@_getCookieHash</span> post.username, md5pass
+          head = [<span class="hljs-number">200</span>,
+            <span class="hljs-string">"Set-Cookie"</span>: <span class="hljs-string">"login=<span class="hljs-subst">#{hash}</span>"</span>
+            <span class="hljs-string">"Content-Type"</span>: <span class="hljs-string">"text/html"</span>]
+        <span class="hljs-keyword">else</span>
+          data.errormessage = <span class="hljs-string">"Usuário e senha incorretos."</span>
+          head = <span class="hljs-literal">null</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>Exibe a view</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="hljs-property">@_render</span> <span class="hljs-string">"login"</span>, data, head
+    <span class="hljs-keyword">return</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>Descola o usuário</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-attribute">logout</span>: <span class="hljs-function"><span class="hljs-params">(<span class="hljs-property">@req</span>, <span class="hljs-property">@res</span>)</span> =&gt;</span>
+    data =
+      <span class="hljs-attribute">username</span>: <span class="hljs-property">@getLoggedUser</span>()
+      <span class="hljs-attribute">pathname</span>: <span class="hljs-property">@_urlPathname</span>()</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>Valida usuário logado</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">return</span> <span class="hljs-property">@error</span> <span class="hljs-property">@req</span>, <span class="hljs-property">@res</span>, <span class="hljs-number">403</span> <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> data.username</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>Apaga cookie e redireciona</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-property">@res</span>.writeHead <span class="hljs-number">302</span>,
+      <span class="hljs-string">"Set-Cookie"</span>: <span class="hljs-string">"login="</span>
+      <span class="hljs-string">"Location"</span>: <span class="hljs-string">"/"</span>
+    <span class="hljs-property">@res</span>.end()
+    <span class="hljs-keyword">return</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>Exibe o formulário de contato</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-attribute">contact</span>: <span class="hljs-function"><span class="hljs-params">(<span class="hljs-property">@req</span>, <span class="hljs-property">@res</span>)</span> -&gt;</span>
+    data =
+      <span class="hljs-attribute">username</span>: <span class="hljs-property">@getLoggedUser</span>()
+      <span class="hljs-attribute">pathname</span>: <span class="hljs-property">@_urlPathname</span>()</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p>Valida usuário logado</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">return</span> <span class="hljs-property">@error</span> <span class="hljs-property">@req</span>, <span class="hljs-property">@res</span>, <span class="hljs-number">403</span> <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> data.username</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <p>Processa os dados enviados via GET</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    get = <span class="hljs-property">@_parseGet</span>()
+    <span class="hljs-keyword">if</span> get?</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <p>Valida os dados</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> get.fullname? <span class="hljs-keyword">or</span> get.fullname <span class="hljs-keyword">is</span> <span class="hljs-string">""</span> <span class="hljs-keyword">or</span>
+      <span class="hljs-keyword">not</span> get.email? <span class="hljs-keyword">or</span> get.email <span class="hljs-keyword">is</span> <span class="hljs-string">""</span> <span class="hljs-keyword">or</span>
+      <span class="hljs-keyword">not</span> get.subject? <span class="hljs-keyword">or</span> get.subject <span class="hljs-keyword">is</span> <span class="hljs-string">""</span> <span class="hljs-keyword">or</span>
+      <span class="hljs-keyword">not</span> get.message? <span class="hljs-keyword">or</span> get.message <span class="hljs-keyword">is</span> <span class="hljs-string">""</span>
+        data.errormessage = <span class="hljs-string">"Atenção: Todos os campos são obrigatórios."</span>
+      <span class="hljs-keyword">else</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+              <p>Envia e-mail</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        smtpTransport = nodemailer.createTransport <span class="hljs-string">"SMTP"</span>,
+          <span class="hljs-attribute">service</span>: config.smtp_service
+          <span class="hljs-attribute">auth</span>:
+            <span class="hljs-attribute">user</span>: config.smtp_username
+            <span class="hljs-attribute">pass</span>: config.smtp_password
+
+        mailOptions =
+          <span class="hljs-attribute">from</span>: <span class="hljs-string">"<span class="hljs-subst">#{get.fullname}</span> &lt;<span class="hljs-subst">#{get.email}</span>&gt;"</span> <span class="hljs-comment"># sender address</span>
+          <span class="hljs-attribute">to</span>: config.contact_address             <span class="hljs-comment"># list of receivers</span>
+          <span class="hljs-attribute">subject</span>: get.subject                   <span class="hljs-comment"># Subject line</span>
+          <span class="hljs-attribute">text</span>: get.message                      <span class="hljs-comment"># plaintext body</span>
+
+        smtpTransport.sendMail mailOptions, <span class="hljs-function"><span class="hljs-params">(error, response)</span> =&gt;</span>
+          <span class="hljs-keyword">if</span> error
+            data.errormessage = <span class="hljs-string">"Erro ao enviar mensagem"</span>
+            <span class="hljs-built_in">console</span>.error error.stack <span class="hljs-keyword">or</span> error
+          <span class="hljs-keyword">else</span>
+            data.successmessage = <span class="hljs-string">"Mensagem enviada com sucesso"</span>
+            <span class="hljs-built_in">console</span>.log <span class="hljs-string">"Mensagem enviada: <span class="hljs-subst">#{response.message}</span>"</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-15">&#182;</a>
+              </div>
+              <p>Fecha o pool smtp e exibe a view</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>          smtpTransport.close()
+          <span class="hljs-property">@_render</span> <span class="hljs-string">"contact"</span>, data
+        <span class="hljs-keyword">return</span>
+
+    <span class="hljs-property">@_render</span> <span class="hljs-string">"contact"</span>, data
+    <span class="hljs-keyword">return</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-16">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-16">&#182;</a>
+              </div>
+              <p>Verifica se existe usuário logado
+e rtorna o username caso sim</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-attribute">getLoggedUser</span>:<span class="hljs-function"> -&gt;</span>
+    cookies = <span class="hljs-property">@_parseCookie</span>()
+    <span class="hljs-keyword">if</span> cookies.login
+      <span class="hljs-keyword">for</span> u <span class="hljs-keyword">in</span> config.users
+        [username, password] = u
+        hash = <span class="hljs-property">@_getCookieHash</span> username, password
+        <span class="hljs-keyword">if</span> hash <span class="hljs-keyword">is</span> cookies.login
+          <span class="hljs-keyword">return</span> username
+    <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-17">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-17">&#182;</a>
+              </div>
+              <p>Exibe status e view de erro</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-attribute">error</span>: <span class="hljs-function"><span class="hljs-params">(<span class="hljs-property">@req</span>, <span class="hljs-property">@res</span>, code)</span> -&gt;</span>
+    view = <span class="hljs-string">"error<span class="hljs-subst">#{code}</span>"</span>
+    <span class="hljs-property">@_render</span> view, <span class="hljs-literal">null</span>, [code, {<span class="hljs-string">"Content-Type"</span>: <span class="hljs-string">"text/html"</span>}]
+    <span class="hljs-keyword">return</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-18">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-18">&#182;</a>
+              </div>
+              <p>Retorna o caminho requerido</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-attribute">_urlPathname</span>:<span class="hljs-function"> -&gt;</span>
+    u = url.parse <span class="hljs-property">@req</span>.url
+    <span class="hljs-keyword">return</span> u.pathname</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-19">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-19">&#182;</a>
+              </div>
+              <p>Valida se o usuário e senha são válidos</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-attribute">_loginValid</span>: <span class="hljs-function"><span class="hljs-params">(user, md5pass)</span>-&gt;</span>
+    <span class="hljs-keyword">for</span> u <span class="hljs-keyword">in</span> config.users
+      [username, password] = u
+      <span class="hljs-keyword">if</span> user <span class="hljs-keyword">is</span> username <span class="hljs-keyword">and</span> md5pass <span class="hljs-keyword">is</span> password
+        <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>
+
+    <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-20">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-20">&#182;</a>
+              </div>
+              <p>Cria um hash para salvar/comparar no Cookie</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-attribute">_getCookieHash</span>: <span class="hljs-function"><span class="hljs-params">(user, md5pass)</span> -&gt;</span>
+    sha1 = crypto.createHash <span class="hljs-string">"sha1"</span>
+    sha1.update user
+    sha1.update md5pass
+    hash = sha1.digest <span class="hljs-string">"hex"</span>
+
+    <span class="hljs-keyword">return</span> hash[.<span class="hljs-number">.6</span>]</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-21">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-21">&#182;</a>
+              </div>
+              <p>Lê os dados enviados via POST</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-attribute">_parsePost</span>: <span class="hljs-function"><span class="hljs-params">(callback)</span> -&gt;</span>
+    body = <span class="hljs-string">""</span>
+    <span class="hljs-property">@req</span>.<span class="hljs-literal">on</span> <span class="hljs-string">"data"</span>, <span class="hljs-function"><span class="hljs-params">(chunk)</span> -&gt;</span>
+      body += chunk.toString()
+    <span class="hljs-property">@req</span>.<span class="hljs-literal">on</span> <span class="hljs-string">"end"</span>,<span class="hljs-function">=&gt;</span>
+      post = qs.parse body <span class="hljs-keyword">if</span> body <span class="hljs-keyword">isnt</span> <span class="hljs-string">""</span>
+      callback.call @, post
+    <span class="hljs-keyword">return</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-22">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-22">&#182;</a>
+              </div>
+              <p>Lê dados enviados via GET</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-attribute">_parseGet</span>:<span class="hljs-function"> -&gt;</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-23">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-23">&#182;</a>
+              </div>
+              <p>Função que verifica se objeto é vazio</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-function"><span class="hljs-title">empty</span> = <span class="hljs-params">(obj)</span> -&gt;</span>
+      <span class="hljs-keyword">for</span> k <span class="hljs-keyword">of</span> obj
+        <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>
+      <span class="hljs-literal">true</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-24">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-24">&#182;</a>
+              </div>
+              <p>Retorna a url query, se não for vazio
+ou retorna null</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    u = url.parse <span class="hljs-property">@req</span>.url, <span class="hljs-literal">true</span>
+    <span class="hljs-keyword">return</span> u.query <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> empty u.query
+    <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-25">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-25">&#182;</a>
+              </div>
+              <p>Lê os dados dos Cookies</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-attribute">_parseCookie</span>:<span class="hljs-function"> -&gt;</span>
+    list = {}
+    rc = <span class="hljs-property">@req</span>.headers.cookie
+    <span class="hljs-keyword">if</span> rc?
+      <span class="hljs-keyword">for</span> cookie <span class="hljs-keyword">in</span> rc.split <span class="hljs-string">";"</span>
+        [key, val] = cookie.split <span class="hljs-string">"="</span>
+        list[key] = val
+    <span class="hljs-keyword">return</span> list</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-26">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-26">&#182;</a>
+              </div>
+              <p>Renderiza uma view</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-attribute">_render</span>: <span class="hljs-function"><span class="hljs-params">(view, data = <span class="hljs-literal">null</span>, head = <span class="hljs-literal">null</span>)</span> -&gt;</span>
+    viewPath = <span class="hljs-string">"views/<span class="hljs-subst">#{view}</span>.jade"</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-27">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-27">&#182;</a>
+              </div>
+              <p>Lê e compila o template Jade</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    tpl    = fs.readFileSync viewPath
+    viewFn = jade.compile tpl.toString(), {<span class="hljs-attribute">filename</span>: viewPath}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-28">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-28">&#182;</a>
+              </div>
+              <p>…então renderiza o mesmo</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    [code, obj] = <span class="hljs-keyword">if</span> head? <span class="hljs-keyword">then</span> head <span class="hljs-keyword">else</span> [<span class="hljs-number">200</span>, {<span class="hljs-string">"Content-Type"</span>: <span class="hljs-string">"text/html"</span>}]
+    <span class="hljs-property">@res</span>.writeHead code, obj
+    <span class="hljs-property">@res</span>.write viewFn(data)
+    <span class="hljs-property">@res</span>.end()
+    <span class="hljs-keyword">return</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-29">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-29">&#182;</a>
+              </div>
+              <p>Exporta uma instancia da classe</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-built_in">module</span>.<span class="hljs-built_in">exports</span> = <span class="hljs-keyword">new</span> Controller()</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

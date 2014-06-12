@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>router.coffee</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page">
+            
+              
+              <a class="source" href="controller.html">
+                controller.coffee
+              </a>
+            
+              
+              <a class="source" href="index.html">
+                index.coffee
+              </a>
+            
+              
+              <a class="source" href="router.html">
+                router.coffee
+              </a>
+            
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>router.coffee</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>url        = <span class="hljs-built_in">require</span>(<span class="hljs-string">"url"</span>)
+controller = <span class="hljs-built_in">require</span>(<span class="hljs-string">"./controller"</span>)</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>O Router é responsável por
+interpretar as requisições e
+executar o método correto do
+controller</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Router</span></span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>Rotas definidas para
+os métodos do controller</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-attribute">_routes</span>: []</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>Adiciona/mapeia uma roda</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-attribute">add</span>: <span class="hljs-function"><span class="hljs-params">(path, action)</span> -&gt;</span>
+    <span class="hljs-property">@_routes</span>.push
+      <span class="hljs-attribute">path</span>: path
+      <span class="hljs-attribute">action</span>: action
+    <span class="hljs-keyword">return</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>Processa uma requisição,
+executando um método do controller</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-attribute">process</span>: <span class="hljs-function"><span class="hljs-params">(req, res)</span> =&gt;</span>
+    u = url.parse req.url</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>Executação uma ação</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    action = <span class="hljs-property">@_getAction</span> u.pathname
+    <span class="hljs-keyword">if</span> action?
+      controller[action](req, res)</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>Faz um log no console de todas as requisições</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="hljs-built_in">console</span>.log <span class="hljs-string">"[Requested: <span class="hljs-subst">#{u.path}</span>]"</span>,
+        <span class="hljs-string">"[Logged user: <span class="hljs-subst">#{controller.getLoggedUser()}</span>]"</span>, <span class="hljs-string">"[200]"</span>
+    <span class="hljs-keyword">else</span>
+      controller.error req, res, <span class="hljs-number">404</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>Faz um log no console de todas as requisições</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="hljs-built_in">console</span>.warn <span class="hljs-string">"[Requested: <span class="hljs-subst">#{u.path}</span>]"</span>,
+        <span class="hljs-string">"[Logged user: <span class="hljs-subst">#{controller.getLoggedUser()}</span>]"</span>, <span class="hljs-string">"[404]"</span>
+    <span class="hljs-keyword">return</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>Obtém a ação a executar
+de acordo com a url</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-attribute">_getAction</span>: <span class="hljs-function"><span class="hljs-params">(path)</span> -&gt;</span>
+    <span class="hljs-keyword">for</span> r <span class="hljs-keyword">in</span> <span class="hljs-property">@_routes</span>
+      <span class="hljs-keyword">if</span> r.path == path
+        <span class="hljs-keyword">return</span> r.action
+    <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>Exporta uma instância da classe</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-built_in">module</span>.<span class="hljs-built_in">exports</span> = <span class="hljs-keyword">new</span> Router()</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>
